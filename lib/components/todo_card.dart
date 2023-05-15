@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:inner_peace/components/reg_card.dart';
+import 'package:inner_peace/components/trophy_card.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ToDoCard extends StatelessWidget {
-
   final TextEditingController _controller = TextEditingController();
 
   int f = 1;
@@ -119,7 +120,6 @@ class ToDoCard extends StatelessWidget {
 }
 
 class ToDoList extends StatefulWidget {
-
   const ToDoList({Key? key}) : super(key: key);
 
   @override
@@ -143,6 +143,7 @@ class _ToDoListState extends State<ToDoList> {
     setState(() {
       loaded = true;
     });
+    Provider.of<RefreshState>(context, listen: false).update();
   }
 
   void _save() async {
@@ -154,6 +155,7 @@ class _ToDoListState extends State<ToDoList> {
         .toList();
     await prefs.setStringList("todoRecord", todoRecord);
     await prefs.setStringList("finishedRecord", finishedRecord);
+    Provider.of<RefreshState>(context, listen: false).update();
   }
 
   @override
@@ -186,20 +188,20 @@ class _ToDoListState extends State<ToDoList> {
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: () async {
+                          setState(() {
+                            todoItems.removeAt(index);
+                            _save();
+                          });
+                        },
+                      ),
                       Checkbox(
                         value: todoItems[index].isCompleted,
                         onChanged: (newValue) {
                           setState(() {
                             todoItems[index].isCompleted = newValue ?? false;
-                            _save();
-                          });
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () async {
-                          setState(() {
-                            todoItems.removeAt(index);
                             _save();
                           });
                         },

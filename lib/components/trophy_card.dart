@@ -1,6 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class TrophyCard extends StatelessWidget {
+class RefreshState extends ChangeNotifier {
+  void update() {
+    notifyListeners();
+  }
+
+  Future<double> refresh() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int total = prefs.getStringList("todoRecord")?.length ?? 0;
+    int finished = prefs.getStringList("finishedRecord")?.length ?? 0;
+    return total != 0 ? finished / total : 0;
+  }
+}
+
+class TrophyCard extends StatefulWidget {
+  const TrophyCard({super.key});
+
+  @override
+  State<TrophyCard> createState() => _TrophyCardState();
+}
+
+class _TrophyCardState extends State<TrophyCard> {
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -22,10 +44,46 @@ class TrophyCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(
-              Icons.emoji_events,
-              size: 100,
-              color: Colors.orange,
+            Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                const Icon(
+                  Icons.emoji_events,
+                  size: 100,
+                  color: Colors.grey,
+                ),
+                Consumer<RefreshState>(
+                  builder: (context, refreshState, _) {
+                    return FutureBuilder(
+                      future: refreshState.refresh(),
+                      builder: (_, s) {
+                        return TweenAnimationBuilder<double>(
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.easeInOut,
+                          tween: Tween<double>(
+                            begin: 0,
+                            end: s.connectionState == ConnectionState.done
+                                ? s.data as double
+                                : 0,
+                          ),
+                          builder: (context, value, _) => ClipRect(
+                            child: Align(
+                              alignment: Alignment.bottomCenter,
+                              heightFactor: value,
+                              // 设置高度因子为0.5，即只显示下半部分
+                              child: const Icon(
+                                Icons.emoji_events,
+                                size: 100,
+                                color: Colors.orange,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
             ),
             const SizedBox(width: 10),
             Column(

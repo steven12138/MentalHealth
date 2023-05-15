@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:inner_peace/data/emotion.dart';
 import 'package:inner_peace/pages/main_page.dart';
+import 'package:path_provider/path_provider.dart';
 
-void main() {
+Future<void> main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(EmotionStorageAdapter());
   runApp(const MyApp());
 }
 
@@ -17,7 +23,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.lightBlue,
         snackBarTheme: const SnackBarThemeData(
           backgroundColor: Colors.green, // Set the desired background color
-          contentTextStyle: TextStyle(color: Colors.white), // Set the text color
+          contentTextStyle:
+              TextStyle(color: Colors.white), // Set the text color
         ),
       ),
       home: MainPage(),

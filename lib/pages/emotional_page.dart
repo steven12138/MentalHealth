@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../components/emotion_card.dart';
 import '../components/meditation_card.dart';
+import '../components/music_card.dart';
 
 class EmotionalPage extends StatefulWidget {
   const EmotionalPage({Key? key}) : super(key: key);
@@ -35,6 +36,8 @@ class _EmotionalPageState extends State<EmotionalPage> {
               EmotionCard(),
               const SizedBox(height: 10),
               const MeditationCard(),
+              const SizedBox(height: 10),
+              const MusicCard(),
             ],
           ),
         ),

@@ -3,12 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:inner_peace/components/reg_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Emotion {
-  String emoji;
-  int id;
+import '../data/emotion_dao.dart';
 
-  Emotion(this.emoji, this.id);
-}
+
 
 
 class EmotionCard extends StatefulWidget {
@@ -73,6 +70,9 @@ class _EmotionCardState extends State<EmotionCard> {
     });
     var pref = await SharedPreferences.getInstance();
     await pref.setInt(emoKey, emotion);
+
+
+
     setState(() {
       currentEmotion = emotion;
       emotionLoaded = true;
@@ -82,9 +82,15 @@ class _EmotionCardState extends State<EmotionCard> {
   @override
   Widget build(BuildContext context) {
     return RegCard(
-      title: !emotionLoaded || currentEmotion != null
-          ? const Text('每日心情')
-          : const Text('选择你今天的心情'),
+      title: Row(
+        children: [
+          Icon(Icons.mood),
+          SizedBox(width: 10),
+          !emotionLoaded || currentEmotion != null
+              ? const Text('每日心情')
+              : const Text('选择你今天的心情'),
+        ],
+      ),
       child: SizedBox(
         height: 100,
         child: AnimatedSwitcher(

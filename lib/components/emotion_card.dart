@@ -1,14 +1,15 @@
-
 import 'package:flutter/material.dart';
 import 'package:inner_peace/components/reg_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
+
+import '../data/emotion.dart';
 
 import '../data/emotion_dao.dart';
 
-
-
-
 class EmotionCard extends StatefulWidget {
+  const EmotionCard({super.key});
+
   @override
   _EmotionCardState createState() => _EmotionCardState();
 }
@@ -51,13 +52,16 @@ class _EmotionCardState extends State<EmotionCard> {
     Emotion('😴', 12)
   ];
 
-  //TODO: finish get data from web
   void _clearEmotion() async {
     setState(() {
       emotionLoaded = false;
     });
     var pref = await SharedPreferences.getInstance();
     pref.remove(emoKey);
+    await pref.setStringList(
+        "emotionRecord",
+        pref.getStringList("emotionRecord") ?? []
+          ..remove(emoKey));
     setState(() {
       currentEmotion = null;
       emotionLoaded = true;
@@ -70,8 +74,14 @@ class _EmotionCardState extends State<EmotionCard> {
     });
     var pref = await SharedPreferences.getInstance();
     await pref.setInt(emoKey, emotion);
+    await pref.setStringList(
+        "emotionRecord",
+        pref.getStringList("emotionRecord") ?? []
+          ..add(emoKey));
 
-
+    var box = await Hive.openBox<EmotionStorage>('emotion');
+    box.add(EmotionStorage(
+        _emotionList.firstWhere((element) => element.id == emotion)));
 
     setState(() {
       currentEmotion = emotion;
@@ -103,46 +113,46 @@ class _EmotionCardState extends State<EmotionCard> {
           },
           child: !emotionLoaded
               ? const SizedBox(
-            child: Center(
-              child: RefreshProgressIndicator(),
-            ),
-          )
-              : currentEmotion != null
-              ? Row(
-            children: [
-              Text(
-                "我今天感觉很 ${_emotionList.firstWhere((element) => element.id == currentEmotion).emoji}",
-                style: const TextStyle(fontSize: 23),
-              ),
-              const Spacer(),
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: const CircleBorder(),
-                    backgroundColor: Colors.lightBlue,
-                  ),
-                  onPressed: _clearEmotion,
-                  child: const Icon(Icons.restore_from_trash))
-            ],
-          )
-              : ListView(
-              scrollDirection: Axis.horizontal,
-              children: _emotionList
-                  .map(
-                    (e) => SizedBox(
-                  height: 70,
-                  width: 70,
                   child: Center(
-                    child: GestureDetector(
-                      onTap: () => _recordEmotion(e.id),
-                      child: Text(
-                        e.emoji,
-                        style: const TextStyle(fontSize: 32.0),
-                      ),
-                    ),
+                    child: RefreshProgressIndicator(),
                   ),
-                ),
-              )
-                  .toList()),
+                )
+              : currentEmotion != null
+                  ? Row(
+                      children: [
+                        Text(
+                          "我今天感觉很 ${_emotionList.firstWhere((element) => element.id == currentEmotion).emoji}",
+                          style: const TextStyle(fontSize: 23),
+                        ),
+                        const Spacer(),
+                        ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: const CircleBorder(),
+                              backgroundColor: Colors.lightBlue,
+                            ),
+                            onPressed: _clearEmotion,
+                            child: const Icon(Icons.restore_from_trash))
+                      ],
+                    )
+                  : ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: _emotionList
+                          .map(
+                            (e) => SizedBox(
+                              height: 70,
+                              width: 70,
+                              child: Center(
+                                child: GestureDetector(
+                                  onTap: () => _recordEmotion(e.id),
+                                  child: Text(
+                                    e.emoji,
+                                    style: const TextStyle(fontSize: 32.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList()),
         ),
       ),
     );

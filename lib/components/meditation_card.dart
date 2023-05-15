@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -78,6 +77,10 @@ class _MeditationCardState extends State<MeditationCard> {
     var prefs = SharedPreferences.getInstance();
     prefs.then((value) {
       value.remove(medKey);
+      value.setStringList(
+          "medRecord",
+          value.getStringList("medRecord") ?? <String>[]
+            ..remove(medKey));
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("已清除冥想记录！"),
         backgroundColor: Colors.red,
@@ -117,7 +120,12 @@ class _MeditationCardState extends State<MeditationCard> {
         if (oldTime != null) {
           time += oldTime;
         }
-        prefs.setInt(medKey, time);
+        await prefs.setInt(medKey, time);
+        await prefs.setStringList(
+          "medRecord",
+          prefs.getStringList("medRecord") ?? <String>[]
+            ..add(medKey),
+        );
       });
     }
     setState(() {
@@ -185,67 +193,66 @@ class _MeditationCardState extends State<MeditationCard> {
           },
           child: start != null
               ? Column(
-            children: [
-              const Text("正在冥想"),
-              const SizedBox(height: 10),
-              Consumer<ProgressState>(
-                builder: (context, progressState, _) {
-                  return TweenAnimationBuilder<double>(
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeInOut,
-                    tween:
-                    Tween<double>(begin: 0, end: progressState.value),
-                    builder: (context, value, _) =>
-                        LinearProgressIndicator(value: value),
-                  );
-                },
-              ),
-              Consumer<LengthState>(
-                builder: (context, lengthState, _) {
-                  return Text(
-                    "${lengthState.value}分钟",
-                    style: const TextStyle(fontSize: 30),
-                  );
-                },
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: _endMeditation,
-                child: const Text("结束冥想"),
-              ),
-            ],
-          )
-              : FutureBuilder(
-            future: getMeditationTime(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Column(
                   children: [
-                    const Text("今日已冥想"),
+                    const Text("正在冥想"),
                     const SizedBox(height: 10),
-                    Text(
-                      "${snapshot.data}分钟",
-                      style: const TextStyle(fontSize: 30),
+                    Consumer<ProgressState>(
+                      builder: (context, progressState, _) {
+                        return TweenAnimationBuilder<double>(
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeInOut,
+                          tween:
+                              Tween<double>(begin: 0, end: progressState.value),
+                          builder: (context, value, _) =>
+                              LinearProgressIndicator(value: value),
+                        );
+                      },
                     ),
-                    const SizedBox(height: 10),
-                    Text("目标：每日冥想$limit分钟"),
+                    Consumer<LengthState>(
+                      builder: (context, lengthState, _) {
+                        return Text(
+                          "${lengthState.value}分钟",
+                          style: const TextStyle(fontSize: 30),
+                        );
+                      },
+                    ),
                     const SizedBox(height: 10),
                     ElevatedButton(
-                      onPressed: _startMeditation,
-                      child: const Text("开始冥想"),
+                      onPressed: _endMeditation,
+                      child: const Text("结束冥想"),
                     ),
                   ],
-                );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
-          ),
+                )
+              : FutureBuilder(
+                  future: getMeditationTime(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Column(
+                        children: [
+                          const Text("今日已冥想"),
+                          const SizedBox(height: 10),
+                          Text(
+                            "${snapshot.data}分钟",
+                            style: const TextStyle(fontSize: 30),
+                          ),
+                          const SizedBox(height: 10),
+                          Text("目标：每日冥想$limit分钟"),
+                          const SizedBox(height: 10),
+                          ElevatedButton(
+                            onPressed: _startMeditation,
+                            child: const Text("开始冥想"),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                ),
         ),
       ),
     );
   }
 }
-

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inner_peace/components/emotion_calendar.dart';
+import 'package:inner_peace/components/trophy_card.dart';
+import 'package:inner_peace/pages/achievement_page.dart';
 import 'package:inner_peace/pages/emotional_page.dart';
 import 'package:inner_peace/pages/personal_page.dart';
 import 'package:inner_peace/utils/configurations.dart';
@@ -29,11 +31,7 @@ class _MainPageState extends State<MainPage> {
 
   final List<PageWithDesc> _pages = [
     PageWithDesc(const EmotionalPage(), "心理与冥想", Icons.home),
-    PageWithDesc(
-        Placeholder(
-          color: Colors.blue,
-        ), "挑战与成就",
-        Icons.emoji_events),
+    PageWithDesc(const AchievementPage(), "挑战与成就", Icons.emoji_events),
     PageWithDesc(const PlaceholderWidget(color: Colors.yellow), "运动健康",
         Icons.directions_run),
     PageWithDesc(PersonalPage(), "个人中心", Icons.person),

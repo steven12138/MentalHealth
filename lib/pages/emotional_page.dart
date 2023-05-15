@@ -29,15 +29,15 @@ class _EmotionalPageState extends State<EmotionalPage> {
         child: Padding(
           padding: const EdgeInsets.only(left: 10, right: 10),
           child: ListView(
-            children: [
-              const SizedBox(
+            children: const [
+              SizedBox(
                 height: 10,
               ),
               EmotionCard(),
-              const SizedBox(height: 10),
-              const MeditationCard(),
-              const SizedBox(height: 10),
-              const MusicCard(),
+              SizedBox(height: 10),
+              MeditationCard(),
+              SizedBox(height: 10),
+              MusicCard(),
             ],
           ),
         ),

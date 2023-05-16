@@ -7,9 +7,11 @@ import 'package:inner_peace/data/emotion_dao.dart';
 import 'package:inner_peace/pages/main_page.dart';
 import 'package:inner_peace/router/person_router.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 Future<void> main() async {
   runApp(const MyApp());
+  await Permission.activityRecognition.request();
 }
 
 class MyApp extends StatelessWidget {

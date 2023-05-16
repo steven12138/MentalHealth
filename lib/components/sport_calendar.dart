@@ -3,14 +3,14 @@ import 'package:inner_peace/data/emotion_dao.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class EmotionCalendarPage extends StatefulWidget {
-  const EmotionCalendarPage({Key? key}) : super(key: key);
+class SportCalendarPage extends StatefulWidget {
+  const SportCalendarPage({Key? key}) : super(key: key);
 
   @override
-  State<EmotionCalendarPage> createState() => _EmotionCalendarPageState();
+  State<SportCalendarPage> createState() => _SportCalendarPageState();
 }
 
-class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
+class _SportCalendarPageState extends State<SportCalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,21 +22,21 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
             },
           ),
           centerTitle: true,
-          title: const Text('情绪日历'),
+          title: const Text('运动日历'),
         ),
-        body: TableEventsExample());
+        body: TableCalendarCard());
   }
 }
 
-class TableEventsExample extends StatefulWidget {
-  const TableEventsExample({super.key});
+class TableCalendarCard extends StatefulWidget {
+  const TableCalendarCard({super.key});
 
   @override
-  _TableEventsExampleState createState() => _TableEventsExampleState();
+  _TableCalendarCardState createState() => _TableCalendarCardState();
 }
 
-class _TableEventsExampleState extends State<TableEventsExample> {
-  late final ValueNotifier<List<Emotion>> _selectedEvents;
+class _TableCalendarCardState extends State<TableCalendarCard> {
+  late final ValueNotifier<List<dynamic>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
   DateTime _focusedDay = DateTime.now();
@@ -54,7 +54,7 @@ class _TableEventsExampleState extends State<TableEventsExample> {
     SharedPreferences.getInstance().then((value) {
       prefs = value;
       setState(() {});
-      _selectedEvents.value=_getEventsForDay(_selectedDay!);
+      _selectedEvents.value = _getEventsForDay(_selectedDay!);
     });
   }
 
@@ -64,21 +64,25 @@ class _TableEventsExampleState extends State<TableEventsExample> {
     super.dispose();
   }
 
-  String emoKeyBuilder(DateTime date) {
-    // "${DateTime.now().year}${DateTime.now().month}${DateTime.now().day}EMO";
-    return "${date.year}${date.month}${date.day}EMO";
+  String sportKeyBuilder(DateTime date) {
+    return "${date.year}${date.month}${date.day}SPORT";
   }
 
-  List<Emotion> _getEventsForDay(DateTime day) {
+  List<dynamic> _getEventsForDay(DateTime day) {
     if (prefs == null) return [];
-    if(prefs!.getStringList("emotionRecord") == null){
+    if (prefs!.getStringList("sportRecord") == null) {
       return [];
     }
-    return prefs!.getStringList("emotionRecord")!.contains(emoKeyBuilder(day))
-        ? [
-            emotionList.firstWhere(
-                (element) => prefs!.getInt(emoKeyBuilder(day))! == element.id)
-          ]
+    return prefs!.getStringList("sportRecord")!.contains(sportKeyBuilder(day))
+        ? prefs!
+            .getStringList(sportKeyBuilder(day))!
+            .map((e) => {
+                  "time": DateTime.parse(e.split("|")[0]),
+                  "length": e.split("|")[1],
+                  "step": int.parse(e.split("|")[2]),
+                  "kar": int.parse(e.split("|")[2]) ~/ 25,
+                })
+            .toList()
         : [];
   }
 
@@ -100,7 +104,7 @@ class _TableEventsExampleState extends State<TableEventsExample> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TableCalendar<Emotion>(
+        TableCalendar<dynamic>(
           firstDay: kFirstDay,
           lastDay: kLastDay,
           focusedDay: _focusedDay,
@@ -113,10 +117,6 @@ class _TableEventsExampleState extends State<TableEventsExample> {
           startingDayOfWeek: StartingDayOfWeek.monday,
           calendarStyle: const CalendarStyle(
             outsideDaysVisible: false,
-          ),
-          headerStyle: const HeaderStyle(
-            formatButtonVisible: false,
-            titleCentered: true,
           ),
           onDaySelected: _onDaySelected,
           onFormatChanged: (format) {
@@ -132,7 +132,7 @@ class _TableEventsExampleState extends State<TableEventsExample> {
         ),
         const SizedBox(height: 8.0),
         Expanded(
-          child: ValueListenableBuilder<List<Emotion>>(
+          child: ValueListenableBuilder<List<dynamic>>(
             valueListenable: _selectedEvents,
             builder: (context, value, _) {
               return ListView.builder(
@@ -149,7 +149,9 @@ class _TableEventsExampleState extends State<TableEventsExample> {
                     ),
                     child: ListTile(
                       onTap: () => print('${value[index]}'),
-                      title: Center(child: Text('你今天感觉很: ${value[index].emoji}')),
+                      title: Center(
+                          child: Text(
+                              "时长: ${value[index]['length']}, ${value[index]['step']}步, ${value[index]['kar']}千卡")),
                     ),
                   );
                 },

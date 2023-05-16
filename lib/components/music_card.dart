@@ -78,6 +78,12 @@ class _MusicCardBodyState extends State<MusicCardBody> {
     });
   }
 
+  @override
+  void dispose() {
+    _player.stop();
+    super.dispose();
+  }
+
   bool isStop = false;
 
   @override

@@ -99,7 +99,7 @@ class _TrophyCardState extends State<TrophyCard> {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  '代办与挑战',
+                  '挑战与成就',
                   style: TextStyle(
                     fontSize: 16,
                   ),

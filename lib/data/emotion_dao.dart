@@ -11,6 +11,20 @@ class Emotion {
   Emotion(this.emoji, this.id);
 }
 
+final List<Emotion> emotionList = [
+  Emotion('😃', 1),
+  Emotion('😔', 2),
+  Emotion('😢', 3),
+  Emotion('😡', 5),
+  Emotion('😭', 6),
+  Emotion('🥰', 7),
+  Emotion('😊', 8),
+  Emotion('😎', 9),
+  Emotion('😍', 10),
+  Emotion('🤩', 11),
+  Emotion('😴', 12)
+];
+
 class EmotionBox {
   static const String boxName = "emotionBox";
 

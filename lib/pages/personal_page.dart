@@ -8,6 +8,14 @@ class PersonalPage extends StatefulWidget {
   State<PersonalPage> createState() => _PersonalPageState();
 }
 
+class Options {
+  String title;
+  IconData icon;
+  String router;
+
+  Options({required this.title, required this.icon, required this.router});
+}
+
 class _PersonalPageState extends State<PersonalPage> {
   final _controller = TextEditingController();
 
@@ -18,6 +26,33 @@ class _PersonalPageState extends State<PersonalPage> {
     super.initState();
     _loadUsername();
   }
+
+  void push(String name) {
+    Navigator.of(context).pushNamed(name);
+  }
+
+  var options = [
+    Options(
+      title: "运动日历",
+      icon: Icons.sports_basketball,
+      router: "/sport",
+    ),
+    Options(
+      title: "情绪日历",
+      icon: Icons.mood,
+      router: '/emotion',
+    ),
+    Options(
+      title: "冥想日历",
+      icon: Icons.assistant_photo,
+      router: '/meditation',
+    ),
+    Options(
+      title: "设置",
+      icon: Icons.settings,
+      router: '/setting',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +76,7 @@ class _PersonalPageState extends State<PersonalPage> {
                   ),
                   Text(
                     username,
-                    style: TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18),
                   ),
                   Expanded(
                     child: Align(
@@ -85,7 +120,7 @@ class _PersonalPageState extends State<PersonalPage> {
                                 );
                               });
                         },
-                        icon: Icon(Icons.edit),
+                        icon: const Icon(Icons.edit),
                       ),
                     ),
                   ),
@@ -94,38 +129,19 @@ class _PersonalPageState extends State<PersonalPage> {
             ],
           ),
         ),
-        const Divider(),
-        ListTile(
-          leading: Icon(Icons.sports_basketball),
-          title: Text('Sport Calendar'),
-          onTap: () {
-            // Handle sport calendar tap
-          },
-        ),
-        Divider(),
-        ListTile(
-          leading: Icon(Icons.emoji_emotions),
-          title: Text('Emotion Calendar'),
-          onTap: () {
-            // Handle emotion calendar tap
-          },
-        ),
-        Divider(),
-        ListTile(
-          leading: Icon(Icons.timeline),
-          title: Text('Meditation Statistic & Calendar'),
-          onTap: () {
-            // Handle meditation statistics and calendar tap
-          },
-        ),
-        Divider(),
-        ListTile(
-          leading: Icon(Icons.settings),
-          title: Text('Settings'),
-          onTap: () {
-            // Handle settings tap
-          },
-        ),
+        ...options
+            .expand(
+              (e) => [
+                const Divider(),
+                ListTile(
+                  leading: Icon(e.icon),
+                  title: Text(e.title),
+                  onTap: () => push(e.router),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                ),
+              ],
+            )
+            .toList(),
       ],
     );
   }

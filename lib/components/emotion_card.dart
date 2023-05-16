@@ -38,19 +38,6 @@ class _EmotionCardState extends State<EmotionCard> {
     _loadEmotion();
   }
 
-  final List<Emotion> _emotionList = [
-    Emotion('😃', 1),
-    Emotion('😔', 2),
-    Emotion('😢', 3),
-    Emotion('😡', 5),
-    Emotion('😭', 6),
-    Emotion('🥰', 7),
-    Emotion('😊', 8),
-    Emotion('😎', 9),
-    Emotion('😍', 10),
-    Emotion('🤩', 11),
-    Emotion('😴', 12)
-  ];
 
   void _clearEmotion() async {
     setState(() {
@@ -78,10 +65,6 @@ class _EmotionCardState extends State<EmotionCard> {
         "emotionRecord",
         pref.getStringList("emotionRecord") ?? []
           ..add(emoKey));
-
-    var box = await Hive.openBox<EmotionStorage>('emotion');
-    box.add(EmotionStorage(
-        _emotionList.firstWhere((element) => element.id == emotion)));
 
     setState(() {
       currentEmotion = emotion;
@@ -121,7 +104,7 @@ class _EmotionCardState extends State<EmotionCard> {
                   ? Row(
                       children: [
                         Text(
-                          "我今天感觉很 ${_emotionList.firstWhere((element) => element.id == currentEmotion).emoji}",
+                          "我今天感觉很 ${emotionList.firstWhere((element) => element.id == currentEmotion).emoji}",
                           style: const TextStyle(fontSize: 23),
                         ),
                         const Spacer(),
@@ -136,7 +119,7 @@ class _EmotionCardState extends State<EmotionCard> {
                     )
                   : ListView(
                       scrollDirection: Axis.horizontal,
-                      children: _emotionList
+                      children: emotionList
                           .map(
                             (e) => SizedBox(
                               height: 70,

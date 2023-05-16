@@ -4,6 +4,7 @@ import 'package:inner_peace/components/trophy_card.dart';
 import 'package:inner_peace/pages/achievement_page.dart';
 import 'package:inner_peace/pages/emotional_page.dart';
 import 'package:inner_peace/pages/personal_page.dart';
+import 'package:inner_peace/pages/sports_page.dart';
 import 'package:inner_peace/utils/configurations.dart';
 
 class MainPage extends StatefulWidget {
@@ -32,49 +33,46 @@ class _MainPageState extends State<MainPage> {
   final List<PageWithDesc> _pages = [
     PageWithDesc(const EmotionalPage(), "心理与冥想", Icons.home),
     PageWithDesc(const AchievementPage(), "挑战与成就", Icons.emoji_events),
-    PageWithDesc(const PlaceholderWidget(color: Colors.yellow), "运动健康",
-        Icons.directions_run),
-    PageWithDesc(PersonalPage(), "个人中心", Icons.person),
+    PageWithDesc(const SportsPage(), "运动健康", Icons.directions_run),
+    PageWithDesc(const PersonalPage(), "个人中心", Icons.person),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Center(child: Text('心理与运动健康')),
-        ),
-        body: PageView(
-          controller: _pageController,
-          onPageChanged: (int index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          physics: const CustomPageScrollPhysics(
-              dragForce: 0.4, parent: AlwaysScrollableScrollPhysics()),
-          children: _pages.map((page) => page.component).toList(),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: _currentIndex,
-          onTap: (int index) {
-            setState(() {
-              _currentIndex = index;
-              _pageController.animateToPage(
-                index,
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-              );
-            });
-          },
-          items: _pages
-              .map((e) => BottomNavigationBarItem(
-                    icon: Icon(e.icon),
-                    label: e.name,
-                  ))
-              .toList(),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(child: Text('心理与运动健康')),
+      ),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (int index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        physics: const CustomPageScrollPhysics(
+            dragForce: 0.4, parent: AlwaysScrollableScrollPhysics()),
+        children: _pages.map((page) => page.component).toList(),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _currentIndex,
+        onTap: (int index) {
+          setState(() {
+            _currentIndex = index;
+            _pageController.animateToPage(
+              index,
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+            );
+          });
+        },
+        items: _pages
+            .map((e) => BottomNavigationBarItem(
+                  icon: Icon(e.icon),
+                  label: e.name,
+                ))
+            .toList(),
       ),
     );
   }

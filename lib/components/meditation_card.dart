@@ -48,6 +48,13 @@ class _MeditationCardState extends State<MeditationCard> {
     return prefs.getInt(medKey) ?? 0;
   }
 
+
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    await _endMeditation();
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -91,12 +98,12 @@ class _MeditationCardState extends State<MeditationCard> {
     });
   }
 
-  void _endMeditation() {
+  Future<void> _endMeditation() async {
     if (start != null) {
       timer?.cancel();
       DateTime end = DateTime.now();
       int time = end.difference(start!).inMinutes;
-      SharedPreferences.getInstance().then((prefs) async {
+      await SharedPreferences.getInstance().then((prefs) async {
         int? oldTime = prefs.getInt(medKey);
 
         if (oldTime != null && oldTime < limit && time + oldTime >= limit) {
